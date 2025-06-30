@@ -39,8 +39,8 @@ function Export-MailboxDelegates($mailbox)
     $readDelegates = Get-EXOMailboxPermission -Identity $mailbox.UserPrincipalName -ResultSize "Unlimited" | 
         Where-Object { $_.User -inotlike "*NT AUTHORITY*" } |
         Select-Object -Property @( 
-        @{ Label = "Mailbox"; Expression = { $mailbox.UserPrincipalName } }, 
-        @{ Label = "Delegate"; Expression = { $_.User } }, 
+        @{ Label = "MailboxEmail"; Expression = { $mailbox.UserPrincipalName } }, 
+        @{ Label = "DelegateEmail"; Expression = { $_.User } }, 
         @{ Label = "AccessRights"; Expression = { Convert-ListToText $_.AccessRights } }, 
         "IsInherited", 
         "InheritanceType" ) |
@@ -48,8 +48,8 @@ function Export-MailboxDelegates($mailbox)
     $sendDelegates = Get-EXORecipientPermission -Identity $mailbox.UserPrincipalName -ResultSize "Unlimited" | 
         Where-Object { $_.Trustee -inotlike "*NT AUTHORITY*" } |
         Select-Object -Property @( 
-            @{ Label = "Mailbox"; Expression = { $mailbox.UserPrincipalName } }, 
-            @{ Label = "Delegate"; Expression = { $_.Trustee } }, 
+            @{ Label = "MailboxEmail"; Expression = { $mailbox.UserPrincipalName } }, 
+            @{ Label = "DelegateEmail"; Expression = { $_.Trustee } }, 
             @{ Label = "AccessRights"; Expression = { Convert-ListToText $_.AccessRights } }, 
             "IsInherited", 
             "InheritanceType" ) |
