@@ -36,6 +36,7 @@ function Export-MailboxDelegates($mailbox)
 {
     Write-Host "Exporting mailbox delegates..." -ForegroundColor "DarkCyan"
     $timeStamp = Get-Date -Format 'yyyy-MM-dd-hh-mmtt'
+    $exportPath = "$PSScriptRoot\$($mailbox.DisplayName)_Mailbox_Delegates_$timeStamp.csv"
     $readDelegates = Get-EXOMailboxPermission -Identity $mailbox.UserPrincipalName -ResultSize "Unlimited" | 
         Where-Object { $_.User -inotlike "*NT AUTHORITY*" } |
         Select-Object -Property @( 
@@ -44,7 +45,7 @@ function Export-MailboxDelegates($mailbox)
         @{ Label = "AccessRights"; Expression = { Convert-ListToText $_.AccessRights } }, 
         "IsInherited", 
         "InheritanceType" ) |
-        Export-Csv -Path "$PSScriptRoot\$($mailbox.DisplayName)_Mailbox_Delegates_$timeStamp.csv" -Append -Force -NoTypeInformation
+        Export-Csv -Path $exportPath -Append -Force -NoTypeInformation
     $sendDelegates = Get-EXORecipientPermission -Identity $mailbox.UserPrincipalName -ResultSize "Unlimited" | 
         Where-Object { $_.Trustee -inotlike "*NT AUTHORITY*" } |
         Select-Object -Property @( 
@@ -53,7 +54,8 @@ function Export-MailboxDelegates($mailbox)
             @{ Label = "AccessRights"; Expression = { Convert-ListToText $_.AccessRights } }, 
             "IsInherited", 
             "InheritanceType" ) |
-        Export-Csv -Path "$PSScriptRoot\$($mailbox.DisplayName)_Mailbox_Delegates_$timeStamp.csv" -Append -Force -NoTypeInformation
+        Export-Csv -Path $exportPath -Append -Force -NoTypeInformation
+        Write-Host "Exported to $exportPath" -ForegroundColor "DarkCyan"
 }
 
 function Convert-ListToText($list)
